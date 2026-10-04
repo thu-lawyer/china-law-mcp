@@ -59,7 +59,7 @@ MCP client config:
 
 ## Data
 
-378 statutes / 23,995 in-force articles (constitution, statutes, legislative interpretations). The SQLite DB (15 MB) ships with the repo; the BM25 index is built on first run (~6 s) and cached.
+378 statutes / 23,995 in-force articles (constitution, statutes, legislative interpretations). The SQLite DB (15 MB) ships with the repo and works out of the box; the BM25 index is built on first run (~6 s) and cached.
 
 ## Limitations
 

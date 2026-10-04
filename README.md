@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)](https://modelcontextprotocol.io)
-[![Laws](https://img.shields.io/badge/laws-378%20(full%20%2F%2011%20public)-green.svg)](#数据)
+[![Laws](https://img.shields.io/badge/laws-378-green.svg)](#数据)
 [![Articles](https://img.shields.io/badge/articles-23%2C995-brightgreen.svg)](#数据)
 
 [English](README.en.md) · 中文
@@ -28,7 +28,7 @@ china-law-mcp 给 AI 装上一个**离线法条库 + 引用核验器**：
 - 模型写了一整段分析？`check_citations_in_text` 会把里面**所有**《某法》第 N 条抽出来逐条核验，列出编造的引用
 - 不知道适用哪条？`search_statutes` 用自然语言检索（支持「同事借我钱不还」这种口语）
 
-**数据在本地，不联网、不注册、不需要 API key。** 公开仓库自带常用法律子集，完整法条库加密存放。
+**数据在本地，不联网、不注册、不需要 API key。**
 
 ## 快速开始
 
@@ -95,36 +95,19 @@ check_citations_in_text("根据《民法典》第1254条…依据《劳动合同
 → invalid: ['《劳动合同法》第99条', '《民法典》第88888条']
 ```
 
-## 数据：两层设计
+## 数据
 
-公开仓库**不带全量法条数据**，避免数据被任意再分发。
+- **378 部法律、23,995 条现行条文**（宪法、法律、立法解释全量）
+- 每条含：法律名、编章、条号（中文 + 阿拉伯数字）、条文全文、部门法、时效状态
+- SQLite 数据库（15 MB）**随仓库提供，开箱即用**；BM25 索引首次运行自动构建（约 6 秒，之后缓存）
 
-| 层 | 内容 | 位置 |
-| --- | --- | --- |
-| **公开子集**（随仓库） | 11 部常用法律 / 2,877 条现行条文：民法典、刑法、劳动合同法、道路交通安全法、消费者权益保护法、食品安全法、治安管理处罚法、行政诉讼法、行政处罚法、个人信息保护法、公司法 | `data/laws.db`（2 MB，开箱即用） |
-| **完整数据**（不公开） | 378 部法律 / 23,995 条现行条文：宪法、法律、立法解释全量 | `data/laws.db.enc`（AES-256-GCM 加密，需口令） |
-
-**使用完整数据**：
-
-```bash
-export CHINA_LAW_KEY='你的口令'      # 由数据提供方单独告知
-python -m china_law_mcp              # 自动解密到临时文件，进程退出即清理
-```
-
-设计要点：
-
-- 加密为 **AES-256-GCM**，密钥由 **scrypt**（n=2¹⁵）从口令派生；口令错误会因认证标签校验失败而直接拒绝，不会解出损坏数据
-- 明文只落在系统临时目录，进程退出自动删除
-- **未设置口令时**：检测到 `laws.db.enc` 会给出明确提示，而不是静默失败
-- ⚠️ 密文与口令若放在同一处，加密等于没有——口令必须**单独传递**
-
-**自建数据**（换成你自己的语料）：
+**换成你自己的语料**：
 
 ```bash
 python scripts/build_corpus.py 你的条文.jsonl     # → data/laws.db
-python scripts/encrypt_data.py data/laws.db       # → data/laws.db.enc（需 CHINA_LAW_KEY）
-python scripts/make_subset.py 完整语料.jsonl       # → 抽取公开子集
 ```
+
+字段说明见 `scripts/build_corpus.py` 头部注释。`scripts/` 下另有两个可选工具：`make_subset.py`（抽取常用法律子集）、`encrypt_data.py`（把数据库加密为 `laws.db.enc`，服务器可用 `CHINA_LAW_KEY` 环境变量自动解密）。
 
 ## 工作原理
 
@@ -146,7 +129,6 @@ check_citations_in_text   ← 正则抽取《X法》第N条，逐条查库核验
 
 ## 已知局限
 
-- **公开仓库只含 11 部常用法律的子集**；完整 378 部需向维护者获取加密数据与口令。
 - **检索是 BM25 基线**，口语→法言法语的映射靠一张手工规则表（约 40 条）。常见场景效果好，生僻表述可能召回不相关条文——**请始终以返回的条文原文为准**。
 - 覆盖范围为**宪法、法律、立法解释**（378 部），不含行政法规、地方性法规、司法解释。修法频繁的领域请留意时效状态字段。
 - 条文时效状态部分为库内推定（见语料 `status_basis` 字段）。

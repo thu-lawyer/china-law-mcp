@@ -100,7 +100,8 @@ BARE_ARTICLE_RE = re.compile(r"([\u4e00-\u9fff]{2,20}?)\s*第\s*([一二三四�
 
 
 def cn2num(s: str) -> int | None:
-    s = s.strip()
+    # 容忍「第一千二百五十四条」「第1254条」「1254」等写法
+    s = (s or "").strip().lstrip("第").rstrip("条").strip()
     if s.isdigit():
         return int(s)
     total = num = 0

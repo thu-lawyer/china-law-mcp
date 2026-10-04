@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Run tests
+        run: PYTHONPATH=src pytest tests/ -v
+      - name: Smoke test MCP handshake
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          import json, subprocess, sys
+          p = subprocess.Popen([sys.executable, "-m", "china_law_mcp"],
+                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+          def call(i, m, params=None):
+              p.stdin.write(json.dumps({"jsonrpc":"2.0","id":i,"method":m,"params":params or {}})+"\n")
+              p.stdin.flush()
+              while True:
+                  line = p.stdout.readline()
+                  if not line: return None
+                  r = json.loads(line)
+                  if r.get("id") == i: return r
+          r = call(1, "initialize", {"protocolVersion":"2024-11-05","capabilities":{},
+                                     "clientInfo":{"name":"ci","version":"1"}})
+          assert r["result"]["serverInfo"]["name"] == "china-law-mcp"
+          p.stdin.write(json.dumps({"jsonrpc":"2.0","method":"notifications/initialized"})+"\n"); p.stdin.flush()
+          tools = call(2, "tools/list")["result"]["tools"]
+          assert len(tools) == 5, tools
+          p.terminate()
+          print("MCP handshake OK, tools:", [t['name'] for t in tools])
+          PY

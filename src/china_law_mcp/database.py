@@ -7,8 +7,22 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 
-PKG_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_DB = Path(os.getenv("CHINA_LAW_DB") or (PKG_ROOT / "data" / "laws.db"))
+PKG_DIR = Path(__file__).resolve().parent          # 安装后随包分发
+PKG_ROOT = PKG_DIR.parent.parent                     # 从 git 克隆时的仓库根
+
+
+def _default_db() -> Path:
+    """依次尝试：环境变量 → 包内数据（pip 安装）→ 仓库 data/（git 克隆）。"""
+    env = os.getenv("CHINA_LAW_DB")
+    if env:
+        return Path(env)
+    bundled = PKG_DIR / "data" / "laws.db"
+    if bundled.exists():
+        return bundled
+    return PKG_ROOT / "data" / "laws.db"
+
+
+DEFAULT_DB = _default_db()
 
 ARTICLE_COLS = (
     "id, law_id, law_name, law_department, level, status, chapter, section, "

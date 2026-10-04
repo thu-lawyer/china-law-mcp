@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import pickle
 import re
+import tempfile
 import threading
 from pathlib import Path
 
@@ -11,8 +12,23 @@ import jieba
 
 from . import database
 
-PKG_ROOT = Path(__file__).resolve().parent.parent.parent
-INDEX_PATH = Path(os.getenv("CHINA_LAW_INDEX") or (PKG_ROOT / "data" / "bm25.pkl"))
+PKG_DIR = Path(__file__).resolve().parent
+PKG_ROOT = PKG_DIR.parent.parent
+
+def _index_path() -> Path:
+    env = os.getenv("CHINA_LAW_INDEX")
+    if env:
+        return Path(env)
+    bundled = PKG_DIR / "data" / "bm25.pkl"
+    if bundled.exists():
+        return bundled
+    repo = PKG_ROOT / "data" / "bm25.pkl"
+    if repo.parent.exists() and os.access(repo.parent, os.W_OK):
+        return repo
+    return Path(tempfile.gettempdir()) / "china-law-mcp-bm25.pkl"   # 包目录只读时退回临时目录
+
+
+INDEX_PATH = _index_path()
 
 _lock = threading.Lock()
 _index: dict | None = None

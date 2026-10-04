@@ -1,0 +1,10 @@
+.git
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+data/*.pkl
+data/*.enc
+data/sample_corpus.jsonl
+.dockerignore
+Dockerfile

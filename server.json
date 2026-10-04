@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.thu-lawyer/china-law-mcp",
+  "title": "China Law MCP",
+  "description": "Chinese statutes as a local MCP server: search 23,995 in-force articles across 378 laws in natural language, and verify statute citations to catch LLM-fabricated references.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/thu-lawyer/china-law-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/thu-lawyer/china-law-mcp:0.1.0",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}

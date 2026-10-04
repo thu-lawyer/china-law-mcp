@@ -1,6 +1,9 @@
 # china-law-mcp · 中国法律条文 MCP 服务器
 FROM python:3.12-slim
 
+# MCP Registry 所有权验证所需（值须与 server.json 的 name 一致）
+LABEL io.modelcontextprotocol.server.name="io.github.thu-lawyer/china-law-mcp"
+
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \

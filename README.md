@@ -7,8 +7,12 @@
 免费 · 免注册 · 免 API key · 本地运行
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/thu-lawyer/china-law-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/thu-lawyer/china-law-mcp/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)](https://modelcontextprotocol.io)
+[![MCP Registry](https://img.shields.io/badge/MCP%20Registry-active-2ea44f.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=china-law-mcp)
+[![Glama](https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp/badges/score.svg)](https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp)
+[![ghcr.io](https://img.shields.io/badge/ghcr.io-china--law--mcp-2496ED.svg?logo=docker&logoColor=white)](https://github.com/thu-lawyer/china-law-mcp/pkgs/container/china-law-mcp)
 [![Laws](https://img.shields.io/badge/laws-378-green.svg)](#数据)
 [![Articles](https://img.shields.io/badge/articles-23%2C995-brightgreen.svg)](#数据)
 
@@ -45,6 +49,23 @@ git clone https://github.com/thu-lawyer/china-law-mcp
 cd china-law-mcp
 pip install -r requirements.txt
 python -m china_law_mcp        # 首次运行自动构建 BM25 索引，约 6 秒
+```
+
+**方式三：Docker**（镜像已发布到 ghcr.io）
+
+```bash
+docker run -i --rm ghcr.io/thu-lawyer/china-law-mcp:latest
+```
+
+```json
+{
+  "mcpServers": {
+    "china-law": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "ghcr.io/thu-lawyer/china-law-mcp:latest"]
+    }
+  }
+}
 ```
 
 **接入 Claude Code / Cursor / 其他 MCP 客户端**
@@ -133,6 +154,20 @@ check_citations_in_text   ← 正则抽取《X法》第N条，逐条查库核验
 - 覆盖范围为**宪法、法律、立法解释**（378 部），不含行政法规、地方性法规、司法解释。修法频繁的领域请留意时效状态字段。
 - 条文时效状态部分为库内推定（见语料 `status_basis` 字段）。
 - 本工具提供条文检索与引用核验，**不构成法律意见**。
+
+## 收录情况
+
+- **MCP 官方注册表**（active）：https://registry.modelcontextprotocol.io/v0/servers?search=china-law-mcp
+- **Glama**：https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp —— 工具定义评分 **A**
+- **awesome-mcp-servers**：已提交 PR
+- 容器镜像：`ghcr.io/thu-lawyer/china-law-mcp`
+
+## 开发
+
+```bash
+pip install -r requirements-dev.txt
+PYTHONPATH=src pytest tests/ -v     # 12 个测试，覆盖检索、直查、引用核验
+```
 
 ## 相关项目
 

@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.DS_Store
+
+# 数据：只提交公开子集 laws.db（2MB）
+# 完整数据加密后为 laws.db.enc，属于私有数据，不进公开仓库
+data/*.enc
+data/*.pkl
+data/sample_corpus.jsonl
+data/roundtrip.db

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "china-law-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "中国法律条文 MCP 服务器：2.3 万条现行法条检索 + 引用核验（防幻觉），免费、免注册、免 API key"
 readme = "README.md"
 requires-python = ">=3.10"

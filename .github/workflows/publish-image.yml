@@ -44,8 +44,12 @@ jobs:
       - name: Stamp version from tag
         run: |
           VERSION="${{ steps.ver.outputs.version }}"
-          jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
-          jq --arg id "ghcr.io/${{ github.repository }}:$VERSION" '.packages[0].identifier = $id' server.json > server.tmp && mv server.tmp server.json
+          jq --arg v "$VERSION" '
+            .version = $v
+            | .packages = [ .packages[] | .version = $v if .registryType == "pypi" else . ]
+            | .packages = [ .packages[] | if .registryType == "oci"
+                then .identifier = ("ghcr.io/${{ github.repository }}:" + $v) else . end ]
+          ' server.json > server.tmp && mv server.tmp server.json
           cat server.json
 
       - name: Authenticate to MCP Registry

@@ -9,6 +9,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/thu-lawyer/china-law-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/thu-lawyer/china-law-mcp/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)](https://python.org)
+[![PyPI](https://img.shields.io/pypi/v/china-law-mcp.svg)](https://pypi.org/project/china-law-mcp/)
+[![Downloads](https://img.shields.io/pypi/dm/china-law-mcp.svg)](https://pypi.org/project/china-law-mcp/)
 [![MCP](https://img.shields.io/badge/MCP-server-8A2BE2.svg)](https://modelcontextprotocol.io)
 [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-active-2ea44f.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=china-law-mcp)
 [![Glama](https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp/badges/score.svg)](https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp)
@@ -19,6 +21,8 @@
 [English](README.en.md) · 中文
 
 </div>
+
+<!-- mcp-name: io.github.thu-lawyer/china-law-mcp -->
 
 ---
 
@@ -36,10 +40,17 @@ china-law-mcp 给 AI 装上一个**离线法条库 + 引用核验器**：
 
 ## 快速开始
 
-**方式一：一条命令（推荐）**
+**方式一：一行命令（推荐）**
 
 ```bash
-uvx --from git+https://github.com/thu-lawyer/china-law-mcp china-law-mcp
+uvx china-law-mcp
+```
+
+**方式二：pip 安装**
+
+```bash
+pip install china-law-mcp
+china-law-mcp
 ```
 
 **方式二：克隆运行**
@@ -75,7 +86,7 @@ docker run -i --rm ghcr.io/thu-lawyer/china-law-mcp:latest
   "mcpServers": {
     "china-law": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/thu-lawyer/china-law-mcp", "china-law-mcp"]
+      "args": ["china-law-mcp"]
     }
   }
 }
@@ -157,6 +168,7 @@ check_citations_in_text   ← 正则抽取《X法》第N条，逐条查库核验
 
 ## 收录情况
 
+- **PyPI**：https://pypi.org/project/china-law-mcp/
 - **MCP 官方注册表**（active）：https://registry.modelcontextprotocol.io/v0/servers?search=china-law-mcp
 - **Glama**：https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp —— 工具定义评分 **A**
 - **awesome-mcp-servers**：已提交 PR

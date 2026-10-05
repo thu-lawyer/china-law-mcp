@@ -4,17 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "china-law-mcp"
-version = "0.1.1"
-description = "中国法律条文 MCP 服务器：2.3 万条现行法条检索 + 引用核验（防幻觉），免费、免注册、免 API key"
+version = "1.0.0"
+description = "中国法律条文 MCP 服务器：23,995 条现行法条检索 + 引用核验（防幻觉），免费、免注册、免 API key、本地运行"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-keywords = ["mcp", "legal", "chinese-law", "rag", "legal-ai", "hallucination-detection"]
+keywords = ["mcp", "legal", "chinese-law", "rag", "legal-ai", "hallucination-detection", "citation-verification", "legal-nlp"]
 dependencies = ["mcp>=2.0", "jieba>=0.42", "rank-bm25>=0.2.2"]
 
 [project.urls]
 Homepage = "https://github.com/thu-lawyer/china-law-mcp"
 Repository = "https://github.com/thu-lawyer/china-law-mcp"
+Documentation = "https://github.com/thu-lawyer/china-law-mcp/blob/main/USAGE.md"
+Issues = "https://github.com/thu-lawyer/china-law-mcp/issues"
 
 [project.scripts]
 china-law-mcp = "china_law_mcp.server:main"

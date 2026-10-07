@@ -53,7 +53,7 @@ pip install china-law-mcp
 china-law-mcp
 ```
 
-**方式二：克隆运行**
+**方式三：克隆运行**
 
 ```bash
 git clone https://github.com/thu-lawyer/china-law-mcp
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 python -m china_law_mcp        # 首次运行自动构建 BM25 索引，约 6 秒
 ```
 
-**方式三：Docker**（镜像已发布到 ghcr.io）
+**方式四：Docker**（镜像已发布到 ghcr.io）
 
 ```bash
 docker run -i --rm ghcr.io/thu-lawyer/china-law-mcp:latest

@@ -70,4 +70,16 @@ jobs:
         run: ./mcp-publisher login github-oidc
 
       - name: Publish to MCP Registry
-        run: ./mcp-publisher publish
+        # 注册表拒绝同一版本重复发布（Bad Request: cannot publish duplicate version）。
+        # 手工重跑 workflow_dispatch 时版本号往往已经发过，这时不算失败，只提示跳过。
+        run: |
+          set -o pipefail
+          log="$(mktemp)"
+          if ./mcp-publisher publish 2>&1 | tee "$log"; then
+            exit 0
+          fi
+          if grep -q "cannot publish duplicate version" "$log"; then
+            echo "::notice::版本 ${{ steps.ver.outputs.version }} 已在 MCP Registry 发布过，本次跳过（镜像已推送）。"
+            exit 0
+          fi
+          exit 1

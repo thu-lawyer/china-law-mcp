@@ -16,7 +16,7 @@ from mcp.server.mcpserver import MCPServer
 
 from . import database, retrieval
 
-INSTRUCTIONS = """中国法律条文检索与引用核验工具（数据：367 部法律 / 2.3 万条现行条文）。
+INSTRUCTIONS = """中国法律条文检索与引用核验工具（数据：378 部法律 / 23,995 条现行条文）。
 
 用于回答中国法律问题时，请按此流程使用：
 1. 先用 search_statutes 检索相关法条，只依据返回的条文原文作答；
@@ -28,20 +28,13 @@ server = MCPServer(
     name="china-law-mcp",
     title="China Law MCP",
     instructions=INSTRUCTIONS,
-    version="0.1.0",
+    version="0.1.1",
 )
 
 try:
     database.ensure_db()
 except Exception as _e:  # 启动即给出清晰提示，而不是等到第一次调用工具才报错
     print(f"china-law-mcp: {_e}", file=sys.stderr)
-if False:
-    print(
-        "china-law-mcp: 未找到 data/laws.db。\n"
-        "请先执行： python scripts/build_corpus.py <语料.jsonl>\n"
-        "或从 Releases 下载预构建数据库放到 data/ 目录。",
-        file=sys.stderr,
-    )
 
 
 def _slim(rec: dict) -> dict:

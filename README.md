@@ -79,7 +79,19 @@ docker run -i --rm ghcr.io/thu-lawyer/china-law-mcp:latest
 }
 ```
 
-**接入 Claude Code / Cursor / 其他 MCP 客户端**
+### 接入你的客户端
+
+标准 stdio 服务器，任何 MCP 客户端都能接。先确定 `uvx` 在 PATH 里（`uv` 随附）。
+
+| 客户端 | 接入方式 |
+| --- | --- |
+| **Claude Code** | 一条命令：`claude mcp add china-law -- uvx china-law-mcp` |
+| **Claude Desktop** | 编辑 `claude_desktop_config.json`（macOS：`~/Library/Application Support/Claude/`；Windows：`%APPDATA%\Claude\`），粘入下面的 JSON 后重启 |
+| **Cursor** | 项目级 `.cursor/mcp.json` 或全局 `~/.cursor/mcp.json`，粘入下面的 JSON |
+| **VS Code**（Copilot Chat） | `.vscode/mcp.json`，注意顶层键是 **`servers`** 而不是 `mcpServers` |
+| **国内客户端**（Cherry Studio、ChatWise、LobeChat、DeepChat 等） | 在各自的 MCP 设置页粘贴同一段 JSON |
+
+把 `uvx` 换成 Docker 也可以，见上一节。
 
 ```json
 {
@@ -104,6 +116,10 @@ docker run -i --rm ghcr.io/thu-lawyer/china-law-mcp:latest
 
 ## 效果示例
 
+下图为真实工具调用返回结果的渲染（终端样式，非截图）：
+
+![china-law-mcp 效果示例：检索相邻关系条文、核验民法典第 1254 条、批量核验一段文本中的三条引用](docs/demo.png)
+
 **自然语言检索**（口语直接问）：
 
 ```text
@@ -126,6 +142,28 @@ check_citations_in_text("根据《民法典》第1254条…依据《劳动合同
 → 共 3 条，有效 1，无效 2
 → invalid: ['《劳动合同法》第99条', '《民法典》第88888条']
 ```
+
+## 作为 Agent Skill 使用（不用 MCP）
+
+如果你用的 Agent 还不支持 MCP，或者只想在命令行里快速查一条法条，仓库里的 [`skills/china-law/`](skills/china-law/) 提供了等价能力：
+
+- [`skills/china-law/SKILL.md`](skills/china-law/SKILL.md) —— Agent Skill 定义（何时用、怎么用、铁律）
+- [`skills/china-law/law.py`](skills/china-law/law.py) —— 零依赖 CLI，**不需要 `mcp` 包**，只依赖 `china_law_mcp` 的检索与数据库模块
+
+```bash
+pip install china-law-mcp
+
+python skills/china-law/law.py search "外卖吃出异物能退吗"
+python skills/china-law/law.py verify 民法典 1254
+python skills/china-law/law.py get 民法典 1254
+python skills/china-law/law.py list 劳动
+echo "根据《民法典》第1254条，另依据《民法典》第88888条。" | python skills/china-law/law.py check -
+
+# 每个子命令都支持 --json
+python skills/china-law/law.py verify 民法典 1254 --json
+```
+
+把 `skills/china-law/` 整个目录放进对应 Agent 的技能目录即可：Claude Code 用户级 `~/.claude/skills/` 或项目级 `.claude/skills/`；Codex `~/.codex/skills/`；Kimi CLI 通过 `--skills-dir` 指定。
 
 ## 数据
 
@@ -168,10 +206,10 @@ check_citations_in_text   ← 正则抽取《X法》第N条，逐条查库核验
 
 ## 收录情况
 
-- **PyPI**：https://pypi.org/project/china-law-mcp/
+- **PyPI**：https://pypi.org/project/china-law-mcp/ （v0.1.1）
 - **MCP 官方注册表**（active）：https://registry.modelcontextprotocol.io/v0/servers?search=china-law-mcp
 - **Glama**：https://glama.ai/mcp/servers/thu-lawyer/china-law-mcp —— 工具定义评分 **A**
-- **awesome-mcp-servers**：已提交 PR
+- **awesome 列表**：已向 [punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers)（Legal 分类）与 [yzfly/Awesome-MCP-ZH](https://github.com/yzfly/Awesome-MCP-ZH) 提交 PR，**仍在审核中、尚未合并**
 - 容器镜像：`ghcr.io/thu-lawyer/china-law-mcp`
 
 ## 开发
@@ -180,6 +218,14 @@ check_citations_in_text   ← 正则抽取《X法》第N条，逐条查库核验
 pip install -r requirements-dev.txt
 PYTHONPATH=src pytest tests/ -v     # 12 个测试，覆盖检索、直查、引用核验
 ```
+
+发布镜像与注册表条目走 tag 触发：
+
+```bash
+git tag v0.1.2 && git push origin v0.1.2
+```
+
+或在 Actions 里手工触发 **Publish image and register** 工作流并填入版本号。
 
 ## 相关项目
 

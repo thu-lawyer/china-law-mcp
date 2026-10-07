@@ -4,6 +4,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "发布版本号（不含 v 前缀，如 0.1.1）"
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -18,7 +23,16 @@ jobs:
 
       - name: Compute version
         id: ver
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        run: |
+          # tag 触发时取 tag 名；手工触发时取 inputs.version，
+          # 否则 GITHUB_REF 是 refs/heads/main，会把分支名当成版本号发出去
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "publishing version: $VERSION"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
